@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/messagepage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,6 +15,9 @@ class MyApp extends StatelessWidget {
       title: 'UserApp',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme.of(context).textTheme, 
+        ),
         primarySwatch: Colors.red,
       ),
       home: const MessagePage(),

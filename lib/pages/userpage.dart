@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:userapp/constants.dart';
 import '../methods/requests.dart';
 
 class UserPage extends StatelessWidget {
@@ -32,101 +33,13 @@ class UserPage extends StatelessWidget {
               else if(snapshot.hasData) {
                 return Column(
                   children: [
-                    Expanded(
-                      flex: 4,
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.red,
-                              Colors.yellow
-                            ]
-                          )
-                        ),
-                   
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildImageAvatar(imageUrl: snapshot.data!.avatar),
-                            const SizedBox(height: 20),
-                            Text(
-                              "@" + snapshot.data!.firstName + (Random().nextInt(1000) + 1).toString(), 
-                              style: const TextStyle(
-                                fontSize: 34, 
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              snapshot.data!.email, 
-                              style: const TextStyle(
-                                fontSize: 16, 
-                                color: Colors.white
-                              ),
-                            )
-                          ]
-                        ),
-                      )
+                    buildTopContainer(
+                      avatar: snapshot.data!.avatar, 
+                      email: snapshot.data!.email, 
+                      userName: "@${snapshot.data!.firstName}${Random().nextInt(1000) + 1}"
                     ),
                     buildBackButton(context),
-                    Expanded(
-                      flex: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: const [
-                               Text(
-                                  "Account Info", 
-                                  style: TextStyle(
-                                    fontSize: 30, 
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: ListView(
-                                physics: const BouncingScrollPhysics(),
-                                children: [
-                                  buildInfoTile(
-                                icon: Icons.enhanced_encryption,
-                                title: "USER ID",
-                                subtitle: snapshot.data!.id.toString(),
-                              ),
-                              buildInfoTile(
-                                icon: Icons.person,
-                                title: "Name",
-                                subtitle: snapshot.data!.firstName + ' ' + snapshot.data!.lastName,
-                              ),
-                              buildInfoTile(
-                                icon: Icons.phone_android,
-                                title: "Mobile number",
-                                subtitle: "+91-1234567890",
-                              ),
-                              buildInfoTile(
-                                icon: Icons.email,
-                                title: "Email",
-                                subtitle: snapshot.data!.email,
-                              ),
-                              buildInfoTile(
-                                icon: Icons.location_history,
-                                title: "Address",
-                                subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                              )
-                                                      ],
-                                                    ),
-                            ),
-                            
-                          ],
-                        ),
-                      )
-                    )
+                    buildBottomContainer(snapshot: snapshot)
                   ],
                 );
               }
@@ -142,6 +55,111 @@ class UserPage extends StatelessWidget {
     ));
   }
 
+  Widget buildTopContainer(
+    {
+     required String avatar,
+     required String email,
+     required String userName,
+    }
+  ) {
+    return Expanded(
+      flex: 4,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: containerGradient,
+        ),
+    
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildImageAvatar(imageUrl: avatar),
+            const SizedBox(height: 20),
+            Text(
+              userName, 
+              style: const TextStyle(
+                fontSize: 34, 
+                fontWeight: FontWeight.bold,
+                color: Colors.white
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              email, 
+              style: const TextStyle(
+                fontSize: 16, 
+                color: Colors.white
+              ),
+            )
+          ]
+        ),
+      )
+    );
+  }
+
+
+  Widget buildBottomContainer(
+    {
+      required AsyncSnapshot snapshot
+    }
+  ) {
+    return Expanded(
+      flex: 6,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 22.0, right: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Text(
+                  "Account Info", 
+                  style: TextStyle(
+                    fontSize: 30, 
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  buildInfoTile(
+                icon: Icons.enhanced_encryption,
+                title: "USER ID",
+                subtitle: snapshot.data!.id.toString(),
+              ),
+              buildInfoTile(
+                icon: Icons.person,
+                title: "Name",
+                subtitle: snapshot.data!.firstName + ' ' + snapshot.data!.lastName,
+              ),
+              buildInfoTile(
+                icon: Icons.phone_android,
+                title: "Mobile number",
+                subtitle: "+91-1234567890",
+              ),
+              buildInfoTile(
+                icon: Icons.email,
+                title: "Email",
+                subtitle: snapshot.data!.email,
+              ),
+              buildInfoTile(
+                icon: Icons.location_history,
+                title: "Address",
+                subtitle: "Lorem ipsum dolor sit amet, consectetur",
+              )
+              ],
+            ),
+            ),
+          ],
+        ),
+      )
+    );
+  }
+
   Widget buildInfoTile(
     {
       required String title,
@@ -155,17 +173,11 @@ class UserPage extends StatelessWidget {
           child: Icon(icon, color: Colors.white)),
         title: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 19
-          ),
+          style: titleStyle
           ),
         subtitle: Text(
           subtitle,
-           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14
-          ),
+           style: subtitleStyle
         ),
       );
   }
@@ -206,40 +218,45 @@ class UserPage extends StatelessWidget {
          Transform.translate(
           offset: const Offset(0.0, -50 / 2.0),
           child: Center(
-            child: ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: ButtonStyle(
-              elevation: MaterialStateProperty.all(4.0),
-              backgroundColor:  MaterialStateProperty.all(const Color(0xFF081603)),
-              shape:  MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50)
-                )
-              )
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0,8,8,8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const CircleAvatar(
-                      radius: 14,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.arrow_back, color: Colors.black)),
-                  ),
-                  const SizedBox(width: 30),
-                  const Text(
-                    'Back to home',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white),
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: buttonGradient,
+                borderRadius: borderRadius,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26, offset: Offset(0, 4), blurRadius: 5.0)
                 ],
               ),
-            ),
+              child: ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: borderRadius),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0,8,8,8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const CircleAvatar(
+                        radius: 14,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.arrow_back, color: Colors.black)),
+                    ),
+                    const SizedBox(width: 50),
+                    Text(
+                      'Back to home',
+                      style: buttonTextStyle,
+                    ),
+                   const SizedBox(width: 50),
+                  ],
+                ),
+              ),
           ),
+            ),
         ))
       ],
     );

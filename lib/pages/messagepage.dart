@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:userapp/constants.dart';
 import 'package:userapp/methods/requests.dart';
 import 'package:userapp/pages/userpage.dart';
 class MessagePage extends StatefulWidget {
@@ -29,10 +30,7 @@ class _MessagePageState extends State<MessagePage> {
 
     child:
       Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Messages'),
-      ),
+      appBar: buildAppBar(title: "Messages"),
       body: FutureBuilder(
         future: getUsers(),
         builder: (BuildContext context, AsyncSnapshot<List> snapshot) { 
@@ -55,44 +53,20 @@ class _MessagePageState extends State<MessagePage> {
                         itemBuilder: (BuildContext context, int index) { 
                            return Column(
                              children: [
-                               ListTile(
-                                 onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => UserPage(snapshot.data![index].id)),
-                                  ),
-                                  leading: CircleAvatar(
-                                    radius: 22,
-                                    backgroundImage: NetworkImage(snapshot.data![index].avatar),
-                                  ),
-                                 title: Text(
-                                   snapshot.data![index].firstName + ' ' + snapshot.data![index].lastName,
-                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold
-                                    ),
-                                   ),
-                                  subtitle: const Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit"),
-                                  trailing: const Icon(Icons.keyboard_arrow_right),
-                                ),
-                             const Divider()
+                             buildMessageTiles(
+                               id: snapshot.data![index].id,
+                               title: snapshot.data![index].firstName + ' ' + snapshot.data![index].lastName,
+                               subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                               avatar: snapshot.data![index].avatar,
+                             ),
+                             const Divider(),
+                             index == snapshot.data!.length - 1 ? buildLoadMoreButton() : Container()
                              ],
                            );
                         }, 
                       ),
                     ),
-                    Column(
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(Colors.grey.shade100)
-                          ), 
-                          onPressed: () { 
-                            addUsers(pageNumber + 1);
-                          },
-                          child: const Text("Load More"),
-                        ),
-                      ],
-                    )
+                    // buildLoadMoreButton()
                   ],
                 );
               }
@@ -106,6 +80,68 @@ class _MessagePageState extends State<MessagePage> {
         }
       ) 
     ));
+  }
+
+  AppBar buildAppBar(
+    {
+      required String title,
+    }
+  ) {
+    return AppBar(
+      centerTitle: true,
+      title: Text(
+        title,
+        style: appBarTextStyle,
+      ),
+    );
+  }
+
+  Widget buildLoadMoreButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.grey.shade100)
+        ), 
+        onPressed: () { 
+          addUsers(pageNumber + 1);
+        },
+        child: const Text("Load More"),
+      ),
+    );
+  }
+
+  Widget buildMessageTiles(
+    {
+      required int id,
+      required String title,
+      required String subtitle,
+      required String avatar,
+    }
+  ) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserPage(id)),
+        ),
+        leading: CircleAvatar(
+          radius: 22,
+          backgroundImage: NetworkImage(avatar),
+        ),
+        title: Text(
+          title,
+          style: titleStyle
+          ),
+        subtitle: Text(
+          subtitle,
+          style: subtitleStyle
+        ),
+        trailing: const Icon(Icons.keyboard_arrow_right),
+    ),
+      );
   }
   
   Future addUsers(int pageNumber) async {
